@@ -2,8 +2,10 @@ import * as React from 'react';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import { useNavigate } from 'react-router-dom';
 
 export default function ManuBar() {
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -11,6 +13,16 @@ export default function ManuBar() {
   };
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const goToRegister = () => {
+    setAnchorEl(null);
+    navigate('/user/register');
+  };
+
+  const goToAccount = () => {
+    setAnchorEl(null);
+    navigate('/user/account');
   };
 
   return (
@@ -33,8 +45,8 @@ export default function ManuBar() {
           'aria-labelledby': 'basic-button',
         }}
       >
-        <MenuItem onClick={handleClose}>Profile</MenuItem>
-        <MenuItem onClick={handleClose}>My account</MenuItem>
+        <MenuItem onClick={goToRegister}>User Register</MenuItem>
+        <MenuItem onClick={goToAccount}>User account</MenuItem>
         <MenuItem onClick={handleClose}>Logout</MenuItem>
       </Menu>
     </div>

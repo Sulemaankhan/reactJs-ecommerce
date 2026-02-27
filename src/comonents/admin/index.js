@@ -11,7 +11,7 @@ import { Container, Paper } from '@mui/material';
 import { makeStyles } from '@material-ui/core/styles';
 import { GridColDef, GridValueGetter } from '@mui/x-data-grid';
 
-import { createProduct, getAllProducts } from '../services/Services';
+import { createProduct, getAllProducts } from '../../products/services/Services';
 
 
 import {
@@ -71,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function Products() {
+export default function Admin() {
 
     const paperStyle = { padding: '50px 20px', width: 600, margin: "20px auto" }
     const [productName, setproductName] = useState('')

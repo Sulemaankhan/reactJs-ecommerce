@@ -48,7 +48,7 @@ export default function NavigationBar() {
         <Toolbar />
         <Box sx={{ overflow: 'auto' }}>
           <List>
-            {['Products','Western', 'Tredentional', 'Watches', 'Footbear'].map((text, index) => (
+            {['Western', 'Tredentional', 'Watches', 'Footbear'].map((text, index) => (
               <ListItem key={text} disablePadding>
                 <ListItemButton onClick={() => onNavigate(text)}>
                   <ListItemIcon>
@@ -61,9 +61,9 @@ export default function NavigationBar() {
           </List>
           <Divider />
           <List>
-            {['Men', 'Women', 'Admin'].map((text, index) => (
+            {['Men', 'Woman', 'Admin'].map((text, index) => (
               <ListItem key={text} disablePadding>
-                <ListItemButton>
+                <ListItemButton onClick={() => onNavigate(text)}>
                   <ListItemIcon>
                     {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
                   </ListItemIcon>

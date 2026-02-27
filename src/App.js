@@ -1,30 +1,54 @@
-import logo from './logo.svg';
 import './App.css';
-import Bar from './navigation/HeaderBar';
-import Products from './products/components/Products';
-import Product1 from './products/Product1';
 import NavigationBar from './navigation/NavigationBar';
-import { Browser, Routes, Route } from 'react-router';
+import Products from './products/components/Products';
 import Western from './products/components/Western';
 import Accesseries from './products/components/Accesseries';
 import Footbear from './products/components/Footbear';
 import Tredentional from './products/components/Tredentional';
 import Watches from './products/components/Watches';
+import Admin from './comonents/admin';
+import Men from './comonents/men';
+import Shop from './Shop';
+import CartPage from './CartPage';
+import LoginPage from './LoginPage';
+import UserRegistration from './comonents/user/register';
+import UserAccount from './comonents/user/account';
+import { CartProvider } from './CartContext';
+import { AuthProvider } from './AuthContext';
+import { SearchProvider } from './SearchContext';
+import { Routes, Route, BrowserRouter } from 'react-router-dom';
+import Woman from './comonents/woman';
 
 function App() {
   return (
     <div className="App">
-      <Routes>
-        <Route path="/" element={<NavigationBar />} >
-          <Route path="/Western" element={<Western />} />
-          <Route path="/Accesseries" element={<Accesseries />} />
-          <Route path="/Western" element={<Western />} />
-          <Route path="/Footbear" element={<Footbear />} />
-          <Route path="/Tredentional" element={<Tredentional />} />
-          <Route path="/Watches" element={<Watches />} />
-          <Route path="/Products" element={<Products />} />
-        </Route>
-      </Routes>
+      <BrowserRouter>
+        <AuthProvider>
+          <CartProvider>
+            <SearchProvider>
+              <Routes>
+                <Route path="/" element={<NavigationBar />}>
+                  <Route index element={<Shop />} />
+                  <Route path="shop" element={<Shop />} />
+                  <Route path="cart" element={<CartPage />} />
+                  <Route path="Products" element={<Products />} />
+                  <Route path="Admin" element={<Admin />} />
+                  <Route path="Men" element={<Men />} />
+                  <Route path="Woman" element={<Woman />} />
+                  <Route path="Western" element={<Western />} />
+                  <Route path="Accesseries" element={<Accesseries />} />
+                  <Route path="Footbear" element={<Footbear />} />
+                  <Route path="Tredentional" element={<Tredentional />} />
+                  <Route path="Watches" element={<Watches />} />
+                  <Route path="login" element={<LoginPage />} />
+                  <Route path="user/register" element={<UserRegistration />} />
+                  <Route path="user/account" element={<UserAccount />} />
+                </Route>
+              </Routes>
+            </SearchProvider>
+          </CartProvider>
+        </AuthProvider>
+      </BrowserRouter>
     </div>
   );
 }
