@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
@@ -6,13 +6,9 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
-import TextField from '@mui/material/TextField';
-import { Container, Paper } from '@mui/material';
-import { makeStyles } from '@material-ui/core/styles';
-import { GridColDef, GridValueGetter } from '@mui/x-data-grid';
+import { Container } from '@mui/material';
 
 import { createProduct, getAllProducts } from '../services/Services';
-
 
 import {
     GridRowModes,
@@ -21,22 +17,6 @@ import {
     GridActionsCellItem,
     GridRowEditStopReasons,
 } from '@mui/x-data-grid';
-import {
-    randomCreatedDate,
-    randomTraderName,
-    randomId,
-    randomArrayItem,
-} from '@mui/x-data-grid-generator';
-
-
-// const roles = ['Market', 'Finance', 'Development'];
-// const randomRole = () => {
-//   return randomArrayItem(roles);
-// };
-
-const initialRows = [
-
-];
 
 function EditToolbar(props) {
     const { setRows, setRowModesModel } = props;
@@ -62,49 +42,18 @@ function EditToolbar(props) {
     );
 }
 
-const useStyles = makeStyles((theme) => ({
-    root: {
-        '& > *': {
-            margin: theme.spacing(1),
-
-        },
-    },
-}));
-
 export default function Products() {
-
-    const paperStyle = { padding: '50px 20px', width: 600, margin: "20px auto" }
-    const [productName, setproductName] = useState('')
-    const [categoryName, setcategoryName] = useState('')
-    const [products, setProducts] = useState([]);
-    const [newProduct, setNewProduct] = useState({})
-    const [responseMsg, setResponseMsg] = useState("")
-    const [errorRes, setErrorMsg] = useState("")
-    const classes = useStyles();
-
-    // const handleSubmitForm = async (e) => {
-    //     //console.log("=====Req product==",product)
-    //     const result = await createProduct(product);
-    //     console.log("=====Api response=====",result)
-    //     if(result){
-    //       setResponseMsg("Successfully created...")
-    //     }else{
-    //       setErrorMsg("error")
-    //     }
-    //   }
+    const [rows, setRows] = React.useState([]);
+    const [rowModesModel, setRowModesModel] = React.useState({});
 
     useEffect(() => {
         getAllProducts()
             .then(res => {
-                //setProducts(res)
                 setRows(res);
             }).catch(err => {
                 console.log('err', err)
             })
     }, [])
-
-    const [rows, setRows] = React.useState([]);
-    const [rowModesModel, setRowModesModel] = React.useState({});
 
     const handleRowEditStop = (params, event) => {
         if (params.reason === GridRowEditStopReasons.rowFocusOut) {
@@ -137,8 +86,8 @@ export default function Products() {
     };
 
     const processRowUpdate = async (newRow) => {
-        const updatedRow = await { ...newRow, isNew: false };
-        const result = await createProduct(newRow);
+        const updatedRow = { ...newRow, isNew: false };
+        await createProduct(newRow);
         setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
         return updatedRow;
     };
@@ -176,7 +125,6 @@ export default function Products() {
             width: 150,
             editable: true,
             type: 'text',
-            //valueOptions: ['Market', 'Finance', 'Development'],
         },
         {
             field: 'price',
@@ -184,8 +132,6 @@ export default function Products() {
             type: 'number',
             width: 150,
             editable: true,
-            type: Number,
-            //valueOptions: ['Market', 'Finance', 'Development'],
         },
         {
             field: 'actions',
@@ -201,9 +147,7 @@ export default function Products() {
                         <GridActionsCellItem
                             icon={<SaveIcon />}
                             label="Save"
-                            sx={{
-                                color: 'primary.main',
-                            }}
+                            sx={{ color: 'primary.main' }}
                             onClick={handleSaveClick(id)}
                         />,
                         <GridActionsCellItem
@@ -236,52 +180,21 @@ export default function Products() {
     ];
 
     return (
-        // <Box
-        //   sx={{
-        //     height: 500,
-        //     width: '100%',
-        //     '& .actions': {
-        //       color: 'text.secondary',
-        //     },
-        //     '& .textPrimary': {
-        //       color: 'text.primary',
-        //     },
-        //   }}
-        // >
-        //   <DataGrid
-        //     rows={rows}
-        //     columns={columns}
-        //     editMode="row"
-        //     rowModesModel={rowModesModel}
-        //     onRowModesModelChange={handleRowModesModelChange}
-        //     onRowEditStop={handleRowEditStop}
-        //     processRowUpdate={processRowUpdate}
-        //     slots={{ toolbar: EditToolbar }}
-        //     slotProps={{
-        //       toolbar: { setRows, setRowModesModel },
-        //     }}
-        //   />
-        // </Box>
-
         <Container style={{ color: "#708090" }}>
             <h3 style={{ color: "gray" }}><u>Product List</u></h3>
-            {/* <Paper elevation={3} style={paperStyle}> */}
-                <Box sx={{ height: 400, width: '96%', color: '#DCDCDC' }}>
-                    <DataGrid
-                        rows={rows}
-                        columns={columns}
-                        editMode="row"
-                        rowModesModel={rowModesModel}
-                        onRowModesModelChange={handleRowModesModelChange}
-                        onRowEditStop={handleRowEditStop}
-                        processRowUpdate={processRowUpdate}
-                        slots={{ toolbar: EditToolbar }}
-                        slotProps={{
-                            toolbar: { setRows, setRowModesModel },
-                        }}
-                    />
-                </Box>
-            {/* </Paper> */}
+            <Box sx={{ height: 400, width: '96%', color: '#DCDCDC' }}>
+                <DataGrid
+                    rows={rows}
+                    columns={columns}
+                    editMode="row"
+                    rowModesModel={rowModesModel}
+                    onRowModesModelChange={handleRowModesModelChange}
+                    onRowEditStop={handleRowEditStop}
+                    processRowUpdate={processRowUpdate}
+                    slots={{ toolbar: EditToolbar }}
+                    slotProps={{ toolbar: { setRows, setRowModesModel } }}
+                />
+            </Box>
         </Container>
     );
 }

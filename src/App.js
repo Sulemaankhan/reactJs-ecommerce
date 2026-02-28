@@ -13,11 +13,14 @@ import CartPage from './CartPage';
 import LoginPage from './LoginPage';
 import UserRegistration from './comonents/user/register';
 import UserAccount from './comonents/user/account';
+import OrderList from './comonents/user/orders';
 import { CartProvider } from './CartContext';
 import { AuthProvider } from './AuthContext';
 import { SearchProvider } from './SearchContext';
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
 import Woman from './comonents/woman';
+import PaymentPage from './comonents/payment/index';
+import ShipmentPage from './comonents/shipment/index';
 
 function App() {
   return (
@@ -43,6 +46,9 @@ function App() {
                   <Route path="login" element={<LoginPage />} />
                   <Route path="user/register" element={<UserRegistration />} />
                   <Route path="user/account" element={<UserAccount />} />
+                  <Route path="user/orders" element={<OrderList />} />
+                  <Route path="payment" element={<PaymentPage />} />
+                  <Route path="shipment" element={<ShipmentPage />} />
                 </Route>
               </Routes>
             </SearchProvider>

@@ -12,12 +12,13 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useCart } from "./CartContext";
+import { useNavigate } from "react-router-dom";
 
 export default function CartPage() {
   const { items, totalItems, totalPrice, updateQuantity, removeItem, clearCart } =
     useCart();
+  const navigate = useNavigate();
   const [placingOrder, setPlacingOrder] = useState(false);
-  const [orderPlaced, setOrderPlaced] = useState(false);
   const [customer, setCustomer] = useState({
     name: "",
     email: "",
@@ -34,8 +35,9 @@ export default function CartPage() {
     setPlacingOrder(true);
     try {
       await new Promise((resolve) => setTimeout(resolve, 800));
+      const finalPrice = totalPrice;
       clearCart();
-      setOrderPlaced(true);
+      navigate("/payment", { state: { totalPrice: finalPrice } });
     } finally {
       setPlacingOrder(false);
     }
@@ -165,11 +167,6 @@ export default function CartPage() {
               >
                 {placingOrder ? "Placing order..." : "Place order"}
               </Button>
-              {orderPlaced && (
-                <Typography sx={{ mt: 2 }} color="success.main">
-                  Order placed successfully! (demo only)
-                </Typography>
-              )}
             </CardContent>
           </Card>
         </Grid>
