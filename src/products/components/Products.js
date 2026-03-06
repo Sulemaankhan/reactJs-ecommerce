@@ -7,6 +7,7 @@ import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
 import { Container } from '@mui/material';
+import Alert from '@mui/material/Alert';
 
 import { createProduct, getAllProducts } from '../services/Services';
 
@@ -45,6 +46,11 @@ function EditToolbar(props) {
 export default function Products() {
     const [rows, setRows] = React.useState([]);
     const [rowModesModel, setRowModesModel] = React.useState({});
+    const [snackbar, setSnackbar] = React.useState({
+        open: false,
+        message: '',
+        severity: 'success',
+    });
 
     useEffect(() => {
         getAllProducts()
@@ -87,9 +93,24 @@ export default function Products() {
 
     const processRowUpdate = async (newRow) => {
         const updatedRow = { ...newRow, isNew: false };
-        await createProduct(newRow);
-        setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
-        return updatedRow;
+        try {
+            const res = await createProduct(newRow);
+            setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
+            setSnackbar({
+                open: true,
+                message: typeof res === 'string' && res ? res : 'Product saved successfully.',
+                severity: 'success',
+            });
+            return updatedRow;
+        } catch (error) {
+            console.error('Failed to save product', error);
+            setSnackbar({
+                open: true,
+                message: 'Failed to save product.',
+                severity: 'error',
+            });
+            throw error;
+        }
     };
 
     const handleRowModesModelChange = (newRowModesModel) => {
@@ -182,6 +203,15 @@ export default function Products() {
     return (
         <Container style={{ color: "#708090" }}>
             <h3 style={{ color: "gray" }}><u>Product List</u></h3>
+            {snackbar.open && (
+                <Alert
+                    onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
+                    severity={snackbar.severity}
+                    sx={{ mb: 2 }}
+                >
+                    {snackbar.message}
+                </Alert>
+            )}
             <Box sx={{ height: 400, width: '96%', color: '#DCDCDC' }}>
                 <DataGrid
                     rows={rows}

@@ -46,7 +46,7 @@ export default function ManuBar() {
         }}
       >
         <MenuItem onClick={goToRegister}>User Register</MenuItem>
-        <MenuItem onClick={goToAccount}>User account</MenuItem>
+        <MenuItem onClick={goToAccount}>My Account</MenuItem>
         <MenuItem onClick={handleClose}>Logout</MenuItem>
       </Menu>
     </div>
