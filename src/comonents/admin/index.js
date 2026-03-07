@@ -104,9 +104,13 @@ export default function Admin() {
             return updatedRow;
         } catch (error) {
             console.error('Failed to save product', error);
+            const msg = error.response?.data?.message
+                || (typeof error.response?.data === 'object' ? JSON.stringify(error.response.data) : error.response?.data)
+                || error.message
+                || 'Failed to save product.';
             setSnackbar({
                 open: true,
-                message: 'Failed to save product.',
+                message: msg,
                 severity: 'error',
             });
             throw error;

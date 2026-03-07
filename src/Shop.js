@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Box,
   Card,
@@ -55,6 +55,7 @@ export default function Shop() {
       return;
     }
 
+    setError("");
     setLoading(true);
     getProductsPage({
       page: page - 1,
@@ -65,17 +66,24 @@ export default function Shop() {
       sortDir,
     })
       .then((data) => {
-        const content = Array.isArray(data.content) ? data.content : [];
+        const content = Array.isArray(data?.content) ? data.content : [];
+        const totalPages = data?.totalPages ?? 1;
         setProducts(content);
-        setTotalPages(data.totalPages || 1);
+        setTotalPages(totalPages);
+        setError("");
         cacheRef.current.set(key, {
           content,
-          totalPages: data.totalPages || 1,
+          totalPages,
         });
       })
       .catch((err) => {
         console.error("Failed to load products", err);
-        setError("Unable to load products. Please try again later.");
+        const status = err.response?.status;
+        const msg =
+          status === 503 || status === 502 || status === 504
+            ? "Gateway or shopping-service unavailable. Ensure Eureka and shopping-service are running."
+            : "Unable to load products. Please try again later.";
+        setError(msg);
       })
       .finally(() => setLoading(false));
   }, [page, pageSize, term, category, sortBy, sortDir]);
@@ -92,11 +100,6 @@ export default function Shop() {
       1
     );
   };
-
-  const filteredProducts = useMemo(() => {
-    // backend already filters/searches; keep hook in case of client-side extras
-    return products;
-  }, [products]);
 
   if (loading) {
     return (
@@ -185,7 +188,7 @@ export default function Shop() {
         </Box>
       </Box>
       <Grid container spacing={3}>
-        {filteredProducts.map((product) => (
+        {products.map((product) => (
           <Grid item key={product.id} xs={12} sm={6} md={4} lg={3}>
             <Card
               sx={{
@@ -261,11 +264,6 @@ export default function Shop() {
       {products.length === 0 && (
         <Box sx={{ textAlign: "center", mt: 4 }}>
           <Typography>No products available.</Typography>
-        </Box>
-      )}
-      {products.length > 0 && filteredProducts.length === 0 && (
-        <Box sx={{ textAlign: "center", mt: 4 }}>
-          <Typography>No products match that name.</Typography>
         </Box>
       )}
       {products.length > 0 && (
