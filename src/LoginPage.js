@@ -21,7 +21,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const from = location.state?.from || "/shop";
+  const from = location.state?.from ?? "/shop";
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -34,7 +34,6 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const data = await loginApi(form);
-      // Expecting backend to return { token, user: { username, ... } }
       login(data.user || { username: form.username }, data.token);
       navigate(from, { replace: true });
     } catch (err) {

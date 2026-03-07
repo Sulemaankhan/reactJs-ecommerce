@@ -7,14 +7,16 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import axiosInstance from "../../../config/axiosConfig";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../../AuthContext";
+import { registerApi } from "../../../auth/AuthService";
 
 export default function UserRegistration() {
+  const { login } = useAuth();
+  const navigate = useNavigate();
   const [form, setForm] = useState({
-    name: "",
-    email: "",
-    mobile: "",
-    address: "",
+    userName: "",
+    password: "",
   });
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState("");
@@ -31,10 +33,14 @@ export default function UserRegistration() {
     setError("");
     setSubmitting(true);
     try {
-      // Adjust backend URL/path and payload structure as needed
-      await axiosInstance.post("/api/auth/signup", form);
-      setSuccess("Registration successful.");
-      setForm({ name: "", email: "", mobile: "", address: "" });
+      const data = await registerApi(form);
+      login(
+        data.user ? { ...data.user, username: data.user.userName } : { username: form.userName },
+        data.token
+      );
+      setSuccess("Registration successful. Redirecting...");
+      setForm({ userName: "", password: "" });
+      setTimeout(() => navigate("/shop", { replace: true }), 1000);
     } catch (err) {
       const message =
         err?.response?.data?.message ||
@@ -54,44 +60,25 @@ export default function UserRegistration() {
         </Typography>
         <Box component="form" onSubmit={handleSubmit}>
           <TextField
-            label="Name"
-            name="name"
-            value={form.name}
+            label="Username"
+            name="userName"
+            value={form.userName}
             onChange={handleChange}
             fullWidth
             required
+            autoComplete="username"
             size="small"
             sx={{ mb: 2 }}
           />
           <TextField
-            label="Email"
-            name="email"
-            type="email"
-            value={form.email}
+            label="Password"
+            name="password"
+            type="password"
+            value={form.password}
             onChange={handleChange}
             fullWidth
             required
-            size="small"
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            label="Mobile number"
-            name="mobile"
-            value={form.mobile}
-            onChange={handleChange}
-            fullWidth
-            required
-            size="small"
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            label="Address"
-            name="address"
-            value={form.address}
-            onChange={handleChange}
-            fullWidth
-            multiline
-            rows={3}
+            autoComplete="new-password"
             size="small"
             sx={{ mb: 2 }}
           />

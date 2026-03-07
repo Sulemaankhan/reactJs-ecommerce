@@ -14,10 +14,12 @@ export function AuthProvider({ children }) {
       const stored = window.localStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (parsed && parsed.token) {
+        if (parsed) {
           setUser(parsed.user || null);
-          setToken(parsed.token);
-          axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${parsed.token}`;
+          setToken(parsed.token || null);
+          if (parsed.token) {
+            axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${parsed.token}`;
+          }
         }
       }
     } catch (e) {
@@ -27,7 +29,7 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     try {
-      if (!token) {
+      if (!user && !token) {
         window.localStorage.removeItem(STORAGE_KEY);
         delete axiosInstance.defaults.headers.common["Authorization"];
         return;
@@ -36,7 +38,11 @@ export function AuthProvider({ children }) {
         STORAGE_KEY,
         JSON.stringify({ user, token })
       );
-      axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      if (token) {
+        axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      } else {
+        delete axiosInstance.defaults.headers.common["Authorization"];
+      }
     } catch (e) {
       console.error("Failed to persist auth", e);
     }
@@ -56,7 +62,7 @@ export function AuthProvider({ children }) {
     () => ({
       user,
       token,
-      isAuthenticated: !!token,
+      isAuthenticated: !!(user || token),
       login,
       logout,
     }),

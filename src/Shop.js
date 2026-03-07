@@ -79,8 +79,10 @@ export default function Shop() {
       .catch((err) => {
         console.error("Failed to load products", err);
         const status = err.response?.status;
-        const msg =
-          status === 503 || status === 502 || status === 504
+        const isNetwork = err.code === "ERR_NETWORK" || err.message?.includes("reach the API");
+        const msg = isNetwork
+          ? "Cannot reach the API. Ensure the API gateway is running on port 7777, then refresh."
+          : status === 503 || status === 502 || status === 504
             ? "Gateway or shopping-service unavailable. Ensure Eureka and shopping-service are running."
             : "Unable to load products. Please try again later.";
         setError(msg);
