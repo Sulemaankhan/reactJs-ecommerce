@@ -15,6 +15,10 @@ export default function UserRegistration() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({
+    firstName: "",
+    lastName: "",
+    emailId: "",
+    mobileNumber: "",
     userName: "",
     password: "",
   });
@@ -39,7 +43,14 @@ export default function UserRegistration() {
         data.token
       );
       setSuccess("Registration successful. Redirecting...");
-      setForm({ userName: "", password: "" });
+      setForm({
+        firstName: "",
+        lastName: "",
+        emailId: "",
+        mobileNumber: "",
+        userName: "",
+        password: "",
+      });
       setTimeout(() => navigate("/shop", { replace: true }), 1000);
     } catch (err) {
       const message =
@@ -59,6 +70,51 @@ export default function UserRegistration() {
           User Registration
         </Typography>
         <Box component="form" onSubmit={handleSubmit}>
+          <TextField
+            label="First Name"
+            name="firstName"
+            value={form.firstName}
+            onChange={handleChange}
+            fullWidth
+            required
+            autoComplete="given-name"
+            size="small"
+            sx={{ mb: 2 }}
+          />
+          <TextField
+            label="Last Name"
+            name="lastName"
+            value={form.lastName}
+            onChange={handleChange}
+            fullWidth
+            required
+            autoComplete="family-name"
+            size="small"
+            sx={{ mb: 2 }}
+          />
+          <TextField
+            label="Email"
+            name="emailId"
+            type="email"
+            value={form.emailId}
+            onChange={handleChange}
+            fullWidth
+            required
+            autoComplete="email"
+            size="small"
+            sx={{ mb: 2 }}
+          />
+          <TextField
+            label="Mobile Number"
+            name="mobileNumber"
+            value={form.mobileNumber}
+            onChange={handleChange}
+            fullWidth
+            required
+            autoComplete="tel"
+            size="small"
+            sx={{ mb: 2 }}
+          />
           <TextField
             label="Username"
             name="userName"

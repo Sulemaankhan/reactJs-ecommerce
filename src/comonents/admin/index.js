@@ -9,6 +9,7 @@ import CancelIcon from '@mui/icons-material/Close';
 import { Container } from '@mui/material';
 import Alert from '@mui/material/Alert';
 
+import { useAuth } from '../../AuthContext';
 import { createProduct, getAllProducts } from '../../products/services/Services';
 
 import {
@@ -44,6 +45,7 @@ function EditToolbar(props) {
 }
 
 export default function Admin() {
+    const { isAuthenticated, isAdmin } = useAuth();
     const [rows, setRows] = React.useState([]);
     const [rowModesModel, setRowModesModel] = React.useState({});
     const [snackbar, setSnackbar] = React.useState({
@@ -53,13 +55,16 @@ export default function Admin() {
     });
 
     useEffect(() => {
+        if (!isAuthenticated || !isAdmin) {
+            return;
+        }
         getAllProducts()
             .then(res => {
                 setRows(res);
             }).catch(err => {
                 console.log('err', err)
             })
-    }, [])
+    }, [isAuthenticated, isAdmin])
 
     const handleRowEditStop = (params, event) => {
         if (params.reason === GridRowEditStopReasons.rowFocusOut) {
@@ -203,6 +208,24 @@ export default function Admin() {
             },
         },
     ];
+
+    if (!isAuthenticated) {
+        return (
+            <Container style={{ color: "#708090" }}>
+                <h3 style={{ color: "gray" }}><u>Admin</u></h3>
+                <Alert severity="info">Please log in to access admin features.</Alert>
+            </Container>
+        );
+    }
+
+    if (!isAdmin) {
+        return (
+            <Container style={{ color: "#708090" }}>
+                <h3 style={{ color: "gray" }}><u>Admin</u></h3>
+                <Alert severity="error">You are not authorized to manage products. ADMIN role required.</Alert>
+            </Container>
+        );
+    }
 
     return (
         <Container style={{ color: "#708090" }}>

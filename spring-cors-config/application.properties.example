@@ -1,0 +1,4 @@
+# CORS: by default any origin (any http/https, host, port) is allowed globally.
+# To restrict to specific origins only:
+# cors.allow-all=false
+# cors.allowed-origins=http://localhost:3000,http://127.0.0.1:3000,https://myapp.example.com

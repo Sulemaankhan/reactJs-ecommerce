@@ -93,7 +93,7 @@ export default function HeaderBar() {
           {isAuthenticated ? (
             <>
               <Typography sx={{ mx: 1 }}>
-                {user?.username || 'User'}
+                {(user?.firstName || user?.username || 'User') + ' - Welcome to App'}
               </Typography>
               <Button color="inherit" onClick={logout}>
                 Logout

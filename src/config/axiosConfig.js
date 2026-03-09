@@ -1,7 +1,21 @@
 import axios from "axios";
 
-// Use API gateway only. Direct backend (1010) causes CORS and wrong response format.
-const baseURL = process.env.REACT_APP_API_BASE_URL || "http://127.0.0.1:7777";
+const GATEWAY_PORT = 7777;
+
+// Match gateway host to app origin to avoid CORS (localhost with localhost, 127.0.0.1 with 127.0.0.1)
+function getDefaultBaseURL() {
+  if (typeof window !== "undefined" && window.location?.hostname) {
+    const host = window.location.hostname;
+    return `http://${host}:${GATEWAY_PORT}`;
+  }
+  return `http://localhost:${GATEWAY_PORT}`;
+}
+
+// In development, use empty baseURL so CRA proxies requests to the gateway (avoids CORS).
+const baseURL =
+  process.env.NODE_ENV === "development"
+    ? ""
+    : process.env.REACT_APP_API_BASE_URL || getDefaultBaseURL();
 
 const axiosInstance = axios.create({
   baseURL,
@@ -10,16 +24,30 @@ const axiosInstance = axios.create({
   },
 });
 
-// Turn network/CORS errors into a readable message (browser hides real cause for security)
+const AUTH_STORAGE_KEY = "product-app-auth";
+
+axiosInstance.interceptors.request.use((config) => {
+  try {
+    const stored = window.localStorage.getItem(AUTH_STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      const token = parsed?.token;
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    }
+  } catch (e) {
+    // ignore
+  }
+  return config;
+});
+
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.code === "ERR_NETWORK" || error.message === "Network Error") {
-      const url = error.config?.baseURL || baseURL;
       error.message =
-        "Cannot reach the API. Check that the API gateway is running at " +
-        url +
-        " and CORS is allowed for this origin.";
+        `Cannot reach the API. Start the API gateway on port ${GATEWAY_PORT} (e.g. http://localhost:${GATEWAY_PORT} or http://127.0.0.1:${GATEWAY_PORT}).`;
     }
     return Promise.reject(error);
   }
